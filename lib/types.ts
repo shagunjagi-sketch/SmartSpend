@@ -5,22 +5,22 @@ export type TriageType = 'need' | 'want'
 export type Category = 
   | 'food'
   | 'transport'
+  | 'shopping'
+  | 'bills'
   | 'entertainment'
-  | 'education'
-  | 'housing'
-  | 'utilities'
-  | 'health'
-  | 'clothing'
-  | 'subscriptions'
   | 'other'
+
+export type PaymentMode = 'cash' | 'online' | 'upi' | 'card'
 
 export interface Transaction {
   id: string
   amount: number
+  amountUSD?: number // Original USD amount if converted
   date: Date
   category: Category
   triage: TriageType
   description: string
+  paymentMode: PaymentMode
   createdAt: Date
   updatedAt: Date
 }
@@ -68,16 +68,23 @@ export interface UserSettings {
   currency: string
 }
 
-// Category metadata for display
+// Category metadata for display - Gen-Z vibrant color palette
 export const CATEGORY_CONFIG: Record<Category, { label: string; icon: string; color: string }> = {
-  food: { label: 'Food & Dining', icon: 'UtensilsCrossed', color: '#d4a574' },
-  transport: { label: 'Transportation', icon: 'Car', color: '#8b7355' },
-  entertainment: { label: 'Entertainment', icon: 'Gamepad2', color: '#c4956a' },
-  education: { label: 'Education', icon: 'GraduationCap', color: '#9a8b7a' },
-  housing: { label: 'Housing & Rent', icon: 'Home', color: '#b8956e' },
-  utilities: { label: 'Utilities', icon: 'Zap', color: '#a68b6a' },
-  health: { label: 'Health & Fitness', icon: 'Heart', color: '#c98b6a' },
-  clothing: { label: 'Clothing', icon: 'Shirt', color: '#b39574' },
-  subscriptions: { label: 'Subscriptions', icon: 'CreditCard', color: '#8a7a65' },
-  other: { label: 'Other', icon: 'MoreHorizontal', color: '#7a6a55' }
+  food: { label: 'Food', icon: 'UtensilsCrossed', color: '#FF6B6B' },
+  transport: { label: 'Transport', icon: 'Car', color: '#4ECDC4' },
+  shopping: { label: 'Shopping', icon: 'ShoppingBag', color: '#FFE66D' },
+  bills: { label: 'Bills', icon: 'Receipt', color: '#95E1D3' },
+  entertainment: { label: 'Entertainment', icon: 'Gamepad2', color: '#DDA0DD' },
+  other: { label: 'Others', icon: 'MoreHorizontal', color: '#A8D8EA' }
 }
+
+// Payment mode metadata
+export const PAYMENT_MODE_CONFIG: Record<PaymentMode, { label: string; icon: string }> = {
+  cash: { label: 'Cash', icon: 'Banknote' },
+  online: { label: 'Online', icon: 'Globe' },
+  upi: { label: 'UPI', icon: 'Smartphone' },
+  card: { label: 'Card', icon: 'CreditCard' }
+}
+
+// USD to INR conversion rate (can be updated dynamically)
+export const USD_TO_INR_RATE = 83.5

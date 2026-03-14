@@ -3,90 +3,101 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Golden Hour Dark Theme - Warm amber tones on soft dark backgrounds */
+/* Gen-Z Friendly Light Theme - Fresh, vibrant, minimal */
 :root {
-  --background: oklch(0.13 0.01 60);
-  --foreground: oklch(0.95 0.02 80);
-  --card: oklch(0.16 0.015 55);
-  --card-foreground: oklch(0.95 0.02 80);
-  --popover: oklch(0.14 0.012 58);
-  --popover-foreground: oklch(0.95 0.02 80);
-  --primary: oklch(0.75 0.15 65);
-  --primary-foreground: oklch(0.12 0.01 60);
-  --secondary: oklch(0.22 0.02 55);
-  --secondary-foreground: oklch(0.90 0.03 75);
-  --muted: oklch(0.20 0.015 55);
-  --muted-foreground: oklch(0.65 0.03 70);
-  --accent: oklch(0.70 0.12 55);
-  --accent-foreground: oklch(0.12 0.01 60);
-  --destructive: oklch(0.55 0.20 25);
-  --destructive-foreground: oklch(0.95 0.02 80);
-  --border: oklch(0.25 0.02 55);
-  --input: oklch(0.20 0.015 55);
-  --ring: oklch(0.75 0.15 65);
-  --chart-1: oklch(0.75 0.15 65);
-  --chart-2: oklch(0.65 0.12 50);
-  --chart-3: oklch(0.60 0.10 35);
-  --chart-4: oklch(0.70 0.08 80);
-  --chart-5: oklch(0.55 0.15 30);
-  --radius: 0.75rem;
-  --sidebar: oklch(0.11 0.01 60);
-  --sidebar-foreground: oklch(0.95 0.02 80);
-  --sidebar-primary: oklch(0.75 0.15 65);
-  --sidebar-primary-foreground: oklch(0.12 0.01 60);
-  --sidebar-accent: oklch(0.20 0.02 55);
-  --sidebar-accent-foreground: oklch(0.95 0.02 80);
-  --sidebar-border: oklch(0.22 0.015 55);
-  --sidebar-ring: oklch(0.75 0.15 65);
+  --background: oklch(0.98 0.005 90);
+  --foreground: oklch(0.15 0.02 280);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.15 0.02 280);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.15 0.02 280);
+  --primary: oklch(0.55 0.25 280);
+  --primary-foreground: oklch(0.98 0.005 90);
+  --secondary: oklch(0.95 0.01 280);
+  --secondary-foreground: oklch(0.25 0.02 280);
+  --muted: oklch(0.93 0.01 280);
+  --muted-foreground: oklch(0.45 0.02 280);
+  --accent: oklch(0.65 0.20 330);
+  --accent-foreground: oklch(0.15 0.02 280);
+  --destructive: oklch(0.55 0.22 25);
+  --destructive-foreground: oklch(0.98 0.005 90);
+  --border: oklch(0.90 0.01 280);
+  --input: oklch(0.93 0.01 280);
+  --ring: oklch(0.55 0.25 280);
+  --chart-1: oklch(0.65 0.20 280);
+  --chart-2: oklch(0.70 0.18 330);
+  --chart-3: oklch(0.65 0.18 160);
+  --chart-4: oklch(0.70 0.15 60);
+  --chart-5: oklch(0.60 0.20 25);
+  --radius: 1rem;
+  --sidebar: oklch(0.97 0.005 280);
+  --sidebar-foreground: oklch(0.15 0.02 280);
+  --sidebar-primary: oklch(0.55 0.25 280);
+  --sidebar-primary-foreground: oklch(0.98 0.005 90);
+  --sidebar-accent: oklch(0.93 0.01 280);
+  --sidebar-accent-foreground: oklch(0.15 0.02 280);
+  --sidebar-border: oklch(0.90 0.01 280);
+  --sidebar-ring: oklch(0.55 0.25 280);
   
-  /* Custom Golden Hour Colors */
-  --amber: oklch(0.75 0.15 65);
-  --amber-glow: oklch(0.80 0.18 70);
-  --amber-muted: oklch(0.55 0.10 60);
-  --warm-gray: oklch(0.35 0.02 55);
-  --success: oklch(0.65 0.15 145);
-  --warning: oklch(0.70 0.15 85);
-  --need: oklch(0.65 0.12 50);
-  --want: oklch(0.60 0.18 25);
+  /* Custom Gen-Z Colors */
+  --amber: oklch(0.70 0.18 60);
+  --amber-glow: oklch(0.75 0.20 65);
+  --amber-muted: oklch(0.80 0.10 60);
+  --warm-gray: oklch(0.60 0.02 280);
+  --success: oklch(0.60 0.18 160);
+  --warning: oklch(0.70 0.18 80);
+  --need: oklch(0.60 0.18 160);
+  --want: oklch(0.65 0.20 330);
 }
 
+/* Gen-Z Friendly Dark Theme - Deep, vibrant, modern */
 .dark {
-  --background: oklch(0.13 0.01 60);
-  --foreground: oklch(0.95 0.02 80);
-  --card: oklch(0.16 0.015 55);
-  --card-foreground: oklch(0.95 0.02 80);
-  --popover: oklch(0.14 0.012 58);
-  --popover-foreground: oklch(0.95 0.02 80);
-  --primary: oklch(0.75 0.15 65);
-  --primary-foreground: oklch(0.12 0.01 60);
-  --secondary: oklch(0.22 0.02 55);
-  --secondary-foreground: oklch(0.90 0.03 75);
-  --muted: oklch(0.20 0.015 55);
-  --muted-foreground: oklch(0.65 0.03 70);
-  --accent: oklch(0.70 0.12 55);
-  --accent-foreground: oklch(0.12 0.01 60);
-  --destructive: oklch(0.55 0.20 25);
-  --destructive-foreground: oklch(0.95 0.02 80);
-  --border: oklch(0.25 0.02 55);
-  --input: oklch(0.20 0.015 55);
-  --ring: oklch(0.75 0.15 65);
-  --chart-1: oklch(0.75 0.15 65);
-  --chart-2: oklch(0.65 0.12 50);
-  --chart-3: oklch(0.60 0.10 35);
-  --chart-4: oklch(0.70 0.08 80);
-  --chart-5: oklch(0.55 0.15 30);
-  --sidebar: oklch(0.11 0.01 60);
-  --sidebar-foreground: oklch(0.95 0.02 80);
-  --sidebar-primary: oklch(0.75 0.15 65);
-  --sidebar-primary-foreground: oklch(0.12 0.01 60);
-  --sidebar-accent: oklch(0.20 0.02 55);
-  --sidebar-accent-foreground: oklch(0.95 0.02 80);
-  --sidebar-border: oklch(0.22 0.015 55);
-  --sidebar-ring: oklch(0.75 0.15 65);
+  --background: oklch(0.12 0.02 280);
+  --foreground: oklch(0.95 0.01 280);
+  --card: oklch(0.16 0.02 280);
+  --card-foreground: oklch(0.95 0.01 280);
+  --popover: oklch(0.14 0.02 280);
+  --popover-foreground: oklch(0.95 0.01 280);
+  --primary: oklch(0.70 0.20 280);
+  --primary-foreground: oklch(0.12 0.02 280);
+  --secondary: oklch(0.22 0.02 280);
+  --secondary-foreground: oklch(0.90 0.01 280);
+  --muted: oklch(0.20 0.02 280);
+  --muted-foreground: oklch(0.60 0.02 280);
+  --accent: oklch(0.70 0.18 330);
+  --accent-foreground: oklch(0.12 0.02 280);
+  --destructive: oklch(0.60 0.22 25);
+  --destructive-foreground: oklch(0.95 0.01 280);
+  --border: oklch(0.25 0.02 280);
+  --input: oklch(0.20 0.02 280);
+  --ring: oklch(0.70 0.20 280);
+  --chart-1: oklch(0.70 0.20 280);
+  --chart-2: oklch(0.75 0.18 330);
+  --chart-3: oklch(0.70 0.18 160);
+  --chart-4: oklch(0.75 0.15 60);
+  --chart-5: oklch(0.65 0.20 25);
+  --sidebar: oklch(0.10 0.02 280);
+  --sidebar-foreground: oklch(0.95 0.01 280);
+  --sidebar-primary: oklch(0.70 0.20 280);
+  --sidebar-primary-foreground: oklch(0.12 0.02 280);
+  --sidebar-accent: oklch(0.20 0.02 280);
+  --sidebar-accent-foreground: oklch(0.95 0.01 280);
+  --sidebar-border: oklch(0.22 0.02 280);
+  --sidebar-ring: oklch(0.70 0.20 280);
+  
+  /* Custom Gen-Z Colors Dark */
+  --amber: oklch(0.75 0.18 60);
+  --amber-glow: oklch(0.80 0.20 65);
+  --amber-muted: oklch(0.55 0.12 60);
+  --warm-gray: oklch(0.35 0.02 280);
+  --success: oklch(0.65 0.18 160);
+  --warning: oklch(0.75 0.18 80);
+  --need: oklch(0.65 0.18 160);
+  --want: oklch(0.70 0.20 330);
 }
 
 @theme inline {
-  --font-sans: 'Geist', 'Geist Fallback';
+  --font-sans: 'Poppins', 'Inter', system-ui, sans-serif;
   --font-mono: 'Geist Mono', 'Geist Mono Fallback';
   --color-background: var(--background);
   --color-foreground: var(--foreground);

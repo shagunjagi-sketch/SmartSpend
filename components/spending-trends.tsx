@@ -48,7 +48,7 @@ export function SpendingTrends() {
 
   if (isLoading) {
     return (
-      <Card className="bg-card border-border/50">
+      <Card className="bg-card border-border/50 rounded-2xl shadow-lg">
         <CardHeader>
           <Skeleton className="h-6 w-48" />
           <Skeleton className="h-4 w-64 mt-2" />
@@ -61,9 +61,9 @@ export function SpendingTrends() {
   }
 
   return (
-    <Card className="bg-card border-border/50">
+    <Card className="bg-card border-border/50 rounded-2xl shadow-lg hover:shadow-xl transition-shadow">
       <CardHeader>
-        <CardTitle className="text-foreground">30-Day Spending Trend</CardTitle>
+        <CardTitle className="text-foreground text-lg font-semibold">30-Day Spending Trend</CardTitle>
         <CardDescription className="text-muted-foreground">
           Daily spending over the last month
         </CardDescription>
@@ -74,29 +74,29 @@ export function SpendingTrends() {
             <AreaChart data={dailySpendingData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
               <defs>
                 <linearGradient id="colorAmount" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#d4a574" stopOpacity={0.4} />
-                  <stop offset="95%" stopColor="#d4a574" stopOpacity={0} />
+                  <stop offset="5%" stopColor="var(--color-primary)" stopOpacity={0.4} />
+                  <stop offset="95%" stopColor="var(--color-primary)" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#3a3530" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
               <XAxis
                 dataKey="displayDate"
-                tick={{ fill: '#8a8a8a', fontSize: 11 }}
+                tick={{ fill: 'var(--color-muted-foreground)', fontSize: 11 }}
                 tickLine={false}
                 axisLine={false}
                 interval="preserveStartEnd"
               />
               <YAxis
-                tick={{ fill: '#8a8a8a', fontSize: 11 }}
+                tick={{ fill: 'var(--color-muted-foreground)', fontSize: 11 }}
                 tickLine={false}
                 axisLine={false}
-                tickFormatter={(value) => `$${value}`}
+                tickFormatter={(value) => `₹${value}`}
               />
               <Tooltip content={<TrendTooltip />} />
               <Area
                 type="monotone"
                 dataKey="amount"
-                stroke="#d4a574"
+                stroke="var(--color-primary)"
                 strokeWidth={2}
                 fill="url(#colorAmount)"
               />
@@ -112,7 +112,7 @@ function TrendTooltip({ active, payload, label }: { active?: boolean; payload?: 
   if (!active || !payload?.length) return null
 
   return (
-    <div className="bg-popover border border-border rounded-lg p-3 shadow-lg">
+    <div className="bg-popover/95 backdrop-blur-sm border border-border rounded-xl p-3 shadow-xl">
       <p className="text-sm text-muted-foreground">{label}</p>
       <p className="font-semibold text-foreground mt-1">
         {formatCurrency(payload[0].value)}
@@ -126,7 +126,7 @@ export function MonthlyTrendsList() {
 
   if (isLoading) {
     return (
-      <Card className="bg-card border-border/50">
+      <Card className="bg-card border-border/50 rounded-2xl shadow-lg">
         <CardHeader>
           <Skeleton className="h-6 w-36" />
           <Skeleton className="h-4 w-40 mt-2" />
@@ -144,9 +144,9 @@ export function MonthlyTrendsList() {
 
   if (analytics.monthlyTrends.length === 0) {
     return (
-      <Card className="bg-card border-border/50">
+      <Card className="bg-card border-border/50 rounded-2xl shadow-lg">
         <CardHeader>
-          <CardTitle className="text-foreground">Category Trends</CardTitle>
+          <CardTitle className="text-foreground text-lg font-semibold">Category Trends</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground text-center py-4">
@@ -158,9 +158,9 @@ export function MonthlyTrendsList() {
   }
 
   return (
-    <Card className="bg-card border-border/50">
+    <Card className="bg-card border-border/50 rounded-2xl shadow-lg hover:shadow-xl transition-shadow">
       <CardHeader>
-        <CardTitle className="text-foreground">Category Trends</CardTitle>
+        <CardTitle className="text-foreground text-lg font-semibold">Category Trends</CardTitle>
         <CardDescription className="text-muted-foreground">
           Compared to last month
         </CardDescription>
@@ -170,16 +170,16 @@ export function MonthlyTrendsList() {
           {analytics.monthlyTrends.slice(0, 5).map((trend) => (
             <div
               key={trend.category}
-              className="flex items-center justify-between p-3 bg-secondary/50 rounded-lg"
+              className="flex items-center justify-between p-3 bg-secondary/50 rounded-xl hover:bg-secondary transition-all"
             >
               <div className="flex items-center gap-3">
                 <div
                   className="w-2 h-8 rounded-full"
-                  style={{ backgroundColor: CATEGORY_CONFIG[trend.category].color }}
+                  style={{ backgroundColor: CATEGORY_CONFIG[trend.category]?.color || '#888' }}
                 />
                 <div>
                   <p className="font-medium text-foreground text-sm">
-                    {CATEGORY_CONFIG[trend.category].label}
+                    {CATEGORY_CONFIG[trend.category]?.label || trend.category}
                   </p>
                   <p className="text-xs text-muted-foreground">
                     {formatCurrency(trend.currentMonth)} this month
