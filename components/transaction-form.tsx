@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { useExpenses } from '@/lib/expense-store'
 import type { Category, TriageType, PaymentMode } from '@/lib/types'
 import { CATEGORY_CONFIG, PAYMENT_MODE_CONFIG, USD_TO_INR_RATE } from '@/lib/types'
@@ -85,6 +85,9 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
       <DialogContent className="bg-card border-border sm:max-w-[450px] rounded-2xl">
         <DialogHeader>
           <DialogTitle className="text-foreground text-xl font-semibold">Add New Expense</DialogTitle>
+          <DialogDescription className="text-muted-foreground">
+            Track your spending by adding a new expense entry.
+          </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-5 mt-4">
           {/* Amount Input with USD/INR Toggle */}

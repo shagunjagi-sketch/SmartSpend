@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { useExpenses } from '@/lib/expense-store'
 import { USD_TO_INR_RATE } from '@/lib/types'
 import { Wallet, ArrowRightLeft, Plus } from 'lucide-react'
@@ -46,6 +46,9 @@ export function AddBalanceForm() {
             </div>
             Add Balance
           </DialogTitle>
+          <DialogDescription className="text-muted-foreground">
+            Add funds to your balance. Supports INR and USD.
+          </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-5 mt-4">
           <div className="space-y-2">
