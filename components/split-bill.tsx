@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Checkbox } from '@/components/ui/checkbox'
 import { useExpenses } from '@/lib/expense-store'
 import { formatCurrency, generateId } from '@/lib/expense-engine'
@@ -39,6 +39,9 @@ export function SplitBillUtility() {
             <DialogContent className="bg-card border-border sm:max-w-[500px]">
               <DialogHeader>
                 <DialogTitle className="text-foreground">Create Split Bill</DialogTitle>
+                <DialogDescription className="text-muted-foreground">
+                  Divide expenses among friends and track who paid what.
+                </DialogDescription>
               </DialogHeader>
               <SplitBillForm onSuccess={() => setOpen(false)} />
             </DialogContent>

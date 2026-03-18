@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { useExpenses } from '@/lib/expense-store'
 import { formatCurrency } from '@/lib/expense-engine'
 import { createClient } from '@/lib/supabase/client'
@@ -88,6 +88,9 @@ export function ExpenseDashboard({ user }: ExpenseDashboardProps) {
                 <DialogContent className="bg-card border-border rounded-2xl">
                   <DialogHeader>
                     <DialogTitle className="text-foreground text-xl font-semibold">Budget Settings</DialogTitle>
+                    <DialogDescription className="text-muted-foreground">
+                      Adjust your monthly budget to track your spending effectively.
+                    </DialogDescription>
                   </DialogHeader>
                   <div className="space-y-4 mt-4">
                     <div className="space-y-2">
