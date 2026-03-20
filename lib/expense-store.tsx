@@ -25,15 +25,21 @@ const ExpenseContext = createContext<ExpenseContextType | null>(null)
 
 // Sample data generator for demo
 function generateSampleData(): Transaction[] {
-  const categories: Category[] = ['canteen', 'stationery', 'subscriptions', 'transport', 'hangingout', 'other']
-  const paymentModes: PaymentMode[] = ['cash', 'online', 'card']
+  const categories: Category[] = ['food', 'transport', 'entertainment', 'education', 'housing', 'utilities', 'health', 'clothing', 'subscriptions', 'shopping', 'bills', 'other']
+  const paymentModes: PaymentMode[] = ['cash', 'online', 'upi', 'card', 'bank_transfer']
   const descriptions: Record<Category, string[]> = {
-    canteen: ['Lunch at Canteen', 'Coffee & Snacks', 'Chai & Momos', 'Breakfast', 'Dinner'],
-    stationery: ['Notebooks', 'Pens & Pencils', 'Xerox', 'Printing', 'Assignment Materials'],
-    subscriptions: ['Netflix', 'Spotify', 'YouTube Premium', 'Prime', 'Photoshop'],
-    transport: ['Uber ride', 'Auto Rickshaw', 'Bus Pass', 'Metro Card', 'Fuel'],
-    hangingout: ['Movie tickets', 'Pizza night', 'Bowling', 'Cafe hangout', 'Gaming'],
-    other: ['Gift for friend', 'Miscellaneous', 'Emergency', 'Donation', 'Books']
+    food: ['Grocery shopping', 'Coffee shop', 'Lunch with friends', 'Pizza delivery', 'Breakfast sandwich'],
+    transport: ['Bus pass', 'Uber ride', 'Gas station', 'Parking fee', 'Metro card'],
+    entertainment: ['Movie tickets', 'Video game', 'Concert', 'Streaming service', 'Books'],
+    education: ['Textbooks', 'Online course', 'Study materials', 'Printing costs', 'Software license'],
+    housing: ['Monthly rent', 'Room supplies', 'Furniture', 'Cleaning supplies', 'Decor'],
+    utilities: ['Electricity bill', 'Internet service', 'Phone bill', 'Water bill', 'Heating'],
+    health: ['Gym membership', 'Medicine', 'Doctor visit', 'Vitamins', 'Sports equipment'],
+    clothing: ['New shoes', 'Winter jacket', 'T-shirts', 'Jeans', 'Accessories'],
+    subscriptions: ['Spotify', 'Netflix', 'Amazon Prime', 'Cloud storage', 'News subscription'],
+    shopping: ['Amazon', 'Flipkart', 'Myntra', 'Local market', 'Electronics'],
+    bills: ['Credit card', 'Insurance', 'Loan payment', 'Subscription renewal', 'Service charges'],
+    other: ['Gift for friend', 'Miscellaneous', 'Emergency expense', 'Lost item replacement', 'Donation']
   }
 
   const transactions: Transaction[] = []
@@ -53,14 +59,19 @@ function generateSampleData(): Transaction[] {
       const description = descOptions[Math.floor(Math.random() * descOptions.length)]
       const paymentMode = paymentModes[Math.floor(Math.random() * paymentModes.length)]
       
-      // Amount varies by category (in INR)
-      let baseAmount = 100
-      if (category === 'subscriptions') baseAmount = 150
-      else if (category === 'stationery') baseAmount = 200
-      else if (category === 'canteen') baseAmount = 150
-      else if (category === 'transport') baseAmount = 100
-      else if (category === 'hangingout') baseAmount = 300
-      else if (category === 'other') baseAmount = 200
+      // Amount varies by category
+      let baseAmount = 10
+      if (category === 'housing') baseAmount = 400
+      else if (category === 'education') baseAmount = 50
+      else if (category === 'utilities') baseAmount = 40
+      else if (category === 'subscriptions') baseAmount = 12
+      else if (category === 'food') baseAmount = 15
+      else if (category === 'transport') baseAmount = 8
+      else if (category === 'entertainment') baseAmount = 25
+      else if (category === 'health') baseAmount = 35
+      else if (category === 'clothing') baseAmount = 45
+      else if (category === 'shopping') baseAmount = 50
+      else if (category === 'bills') baseAmount = 60
 
       const amount = baseAmount + Math.random() * baseAmount * 0.5
 
@@ -77,6 +88,9 @@ function generateSampleData(): Transaction[] {
       })
     }
   }
+
+  return transactions
+}
 
   return transactions
 }
@@ -127,8 +141,6 @@ export function ExpenseProvider({ children }: { children: ReactNode }) {
       updatedAt: new Date()
     }
     setTransactions((prev) => [...prev, newTransaction])
-    // Automatically deduct balance when expense is added
-    setBalance((prev) => Math.max(0, prev - transaction.amount))
   }, [])
 
   const updateTransaction = useCallback((id: string, updates: Partial<Transaction>) => {

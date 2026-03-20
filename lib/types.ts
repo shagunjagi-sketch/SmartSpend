@@ -3,14 +3,20 @@
 export type TriageType = 'need' | 'want'
 
 export type Category = 
-  | 'canteen'
-  | 'stationery'
-  | 'subscriptions'
+  | 'food'
   | 'transport'
-  | 'hangingout'
+  | 'shopping'
+  | 'bills'
+  | 'entertainment'
+  | 'education'
+  | 'housing'
+  | 'utilities'
+  | 'health'
+  | 'clothing'
+  | 'subscriptions'
   | 'other'
 
-export type PaymentMode = 'cash' | 'online' | 'card'
+export type PaymentMode = 'cash' | 'online' | 'upi' | 'card' | 'bank_transfer'
 
 export interface Transaction {
   id: string
@@ -68,21 +74,29 @@ export interface UserSettings {
   currency: string
 }
 
-// Category metadata for display - Gen-Z vibrant color palette
+// Category metadata for display
 export const CATEGORY_CONFIG: Record<Category, { label: string; icon: string; color: string }> = {
-  canteen: { label: 'Canteen', icon: 'UtensilsCrossed', color: '#FF6B6B' },
-  stationery: { label: 'Stationery/Xerox', icon: 'BookOpen', color: '#4ECDC4' },
-  subscriptions: { label: 'Subscriptions', icon: 'CreditCard', color: '#FFE66D' },
-  transport: { label: 'Transport', icon: 'Car', color: '#95E1D3' },
-  hangingout: { label: 'Hanging Out', icon: 'Smile', color: '#DDA0DD' },
-  other: { label: 'Others', icon: 'MoreHorizontal', color: '#A8D8EA' }
+  food: { label: 'Food & Dining', icon: 'UtensilsCrossed', color: '#d4a574' },
+  transport: { label: 'Transportation', icon: 'Car', color: '#8b7355' },
+  entertainment: { label: 'Entertainment', icon: 'Gamepad2', color: '#c4956a' },
+  education: { label: 'Education', icon: 'GraduationCap', color: '#9a8b7a' },
+  housing: { label: 'Housing & Rent', icon: 'Home', color: '#b8956e' },
+  utilities: { label: 'Utilities', icon: 'Zap', color: '#a68b6a' },
+  health: { label: 'Health & Fitness', icon: 'Heart', color: '#c98b6a' },
+  clothing: { label: 'Clothing', icon: 'Shirt', color: '#b39574' },
+  subscriptions: { label: 'Subscriptions', icon: 'CreditCard', color: '#8a7a65' },
+  shopping: { label: 'Shopping', icon: 'ShoppingBag', color: '#a89968' },
+  bills: { label: 'Bills & Payments', icon: 'Receipt', color: '#9a8a75' },
+  other: { label: 'Other', icon: 'MoreHorizontal', color: '#7a6a55' }
 }
 
 // Payment mode metadata
 export const PAYMENT_MODE_CONFIG: Record<PaymentMode, { label: string; icon: string }> = {
   cash: { label: 'Cash', icon: 'Banknote' },
   online: { label: 'Online', icon: 'Globe' },
-  card: { label: 'Card', icon: 'CreditCard' }
+  upi: { label: 'UPI', icon: 'Smartphone' },
+  card: { label: 'Card', icon: 'CreditCard' },
+  bank_transfer: { label: 'Bank Transfer', icon: 'Building2' }
 }
 
 // USD to INR conversion rate (can be updated dynamically)

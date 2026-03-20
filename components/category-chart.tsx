@@ -8,17 +8,13 @@ import { formatCurrency } from '@/lib/expense-engine'
 import { CATEGORY_CONFIG, type Category } from '@/lib/types'
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts'
 
-// Gen-Z Vibrant color palette for chart segments
 const CHART_COLORS = [
-  '#FF6B6B', // Coral Red
-  '#4ECDC4', // Teal
-  '#FFE66D', // Yellow
-  '#95E1D3', // Mint
-  '#DDA0DD', // Plum
-  '#A8D8EA', // Sky Blue
+  '#d4a574', '#8b7355', '#c4956a', '#9a8b7a', '#b8956e',
+  '#a68b6a', '#c98b6a', '#b39574', '#8a7a65', '#a89968',
+  '#9a8a75', '#7a6a55'
 ]
 
-type FilterPeriod = 'monthly'
+type FilterPeriod = 'monthly' | 'quarterly'
 
 interface ChartDataItem {
   name: string
@@ -30,11 +26,18 @@ interface ChartDataItem {
 
 export function CategoryChart() {
   const { transactions, isLoading } = useExpenses()
+  const [filterPeriod, setFilterPeriod] = useState<FilterPeriod>('monthly')
 
   const chartData = useMemo<ChartDataItem[]>(() => {
     const now = new Date()
-    // Always show current month only
-    const startDate = new Date(now.getFullYear(), now.getMonth(), 1)
+    let startDate: Date
+
+    if (filterPeriod === 'monthly') {
+      startDate = new Date(now.getFullYear(), now.getMonth(), 1)
+    } else {
+      // Quarterly - last 3 months
+      startDate = new Date(now.getFullYear(), now.getMonth() - 2, 1)
+    }
 
     const filteredTransactions = transactions.filter(t => new Date(t.date) >= startDate)
 
@@ -65,126 +68,92 @@ export function CategoryChart() {
       }
     })
 
-    return data.sort((a, b) => {
-      // Pin 'Other' to the bottom
-      if (a.category === 'other') return 1
-      if (b.category === 'other') return -1
-      return b.value - a.value
-    })
-  }, [transactions])
+    return data.sort((a, b) => b.value - a.value)
+  }, [transactions, filterPeriod])
 
   if (isLoading) {
     return (
-      <Card className="bg-card border-border/50 rounded-2xl shadow-lg">
+      <Card className="bg-card border-border/50">
         <CardHeader>
           <Skeleton className="h-6 w-44" />
         </CardHeader>
-        <CardContent className="flex items-center justify-center h-[350px]">
-          <Skeleton className="h-[200px] w-[200px] rounded-full" />
-        </CardContent>
-      </Card>
-    )
-  }
-
-  if (chartData.length === 0) {
-    return (
-      <Card className="bg-card border-border/50 rounded-2xl shadow-lg">
-        <CardHeader>
-          <CardTitle className="text-foreground text-lg font-semibold">Spending by Category</CardTitle>
-        </CardHeader>
-        <CardContent className="flex items-center justify-center h-[350px]">
-          <p className="text-muted-foreground">No spending data yet</p>
+        <CardContent>
+          <Skeleton className="h-72 w-full" />
         </CardContent>
       </Card>
     )
   }
 
   return (
-    <Card className="bg-card border-border/50 rounded-2xl shadow-lg hover:shadow-xl transition-shadow">
+    <Card className="bg-card border-border/50">
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-foreground text-lg font-semibold">Spending by Category (Current Month)</CardTitle>
+          <CardTitle className="text-foreground text-lg font-semibold">Spending by Category</CardTitle>
+          <div className="flex gap-1 p-1 bg-secondary rounded-lg">
+            <button
+              onClick={() => setFilterPeriod('monthly')}
+              className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
+                filterPeriod === 'monthly'
+                  ? 'bg-primary text-primary-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              Monthly
+            </button>
+            <button
+              onClick={() => setFilterPeriod('quarterly')}
+              className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
+                filterPeriod === 'quarterly'
+                  ? 'bg-primary text-primary-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              Quarterly
+            </button>
+          </div>
         </div>
       </CardHeader>
       <CardContent>
-        <div className="h-[320px]">
-          <ResponsiveContainer width="100%" height="100%">
+        {chartData.length === 0 ? (
+          <div className="flex items-center justify-center h-72 text-muted-foreground">
+            <p>No spending data for this period</p>
+          </div>
+        ) : (
+          <ResponsiveContainer width="100%" height={300}>
             <PieChart>
-              <defs>
-                {chartData.map((entry, index) => (
-                  <linearGradient key={`gradient-${index}`} id={`gradient-${index}`} x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor={entry.color} stopOpacity={1} />
-                    <stop offset="100%" stopColor={entry.color} stopOpacity={0.7} />
-                  </linearGradient>
-                ))}
-              </defs>
               <Pie
                 data={chartData}
                 cx="50%"
-                cy="45%"
-                innerRadius={55}
-                outerRadius={95}
-                paddingAngle={3}
+                cy="50%"
+                labelLine={false}
+                label={(entry) => `${entry.name}: ₹${formatCurrency(entry.value)}`}
+                outerRadius={80}
+                fill="#8884d8"
                 dataKey="value"
-                stroke="none"
-                animationBegin={0}
-                animationDuration={800}
               >
                 {chartData.map((entry, index) => (
-                  <Cell 
-                    key={`cell-${index}`} 
-                    fill={`url(#gradient-${index})`}
-                    className="drop-shadow-md hover:drop-shadow-lg transition-all cursor-pointer"
-                  />
+                  <Cell key={`cell-${index}`} fill={entry.color} />
                 ))}
               </Pie>
-              <Tooltip content={<CustomTooltip />} />
-              <Legend
-                content={<CustomLegend data={chartData} />}
-                verticalAlign="bottom"
-              />
+              <Tooltip formatter={(value) => formatCurrency(value as number)} />
+              <Legend />
             </PieChart>
           </ResponsiveContainer>
+        )}
+        
+        {/* Category breakdown */}
+        <div className="grid grid-cols-2 gap-3 mt-6">
+          {chartData.map((item) => (
+            <div key={item.category} className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-muted-foreground truncate">{item.name}</p>
+                <p className="text-sm font-semibold text-foreground">{item.percentage.toFixed(1)}%</p>
+              </div>
+            </div>
+          ))}
         </div>
       </CardContent>
     </Card>
-  )
-}
-
-function CustomTooltip({ active, payload }: { active?: boolean; payload?: Array<{ payload: ChartDataItem }> }) {
-  if (!active || !payload?.length) return null
-
-  const data = payload[0].payload
-
-  return (
-    <div className="bg-popover/95 backdrop-blur-sm border border-border rounded-xl p-3 shadow-xl">
-      <div className="flex items-center gap-2 mb-1">
-        <div 
-          className="w-3 h-3 rounded-full"
-          style={{ backgroundColor: data.color }}
-        />
-        <p className="font-semibold text-foreground">{data.name}</p>
-      </div>
-      <p className="text-sm text-muted-foreground">
-        {formatCurrency(data.value)} 
-        <span className="ml-1 text-primary font-medium">({data.percentage.toFixed(1)}%)</span>
-      </p>
-    </div>
-  )
-}
-
-function CustomLegend({ data }: { data: ChartDataItem[] }) {
-  return (
-    <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 mt-4 px-2">
-      {data.map((item, index) => (
-        <div key={index} className="flex items-center gap-1.5">
-          <div
-            className="w-2.5 h-2.5 rounded-full"
-            style={{ backgroundColor: item.color }}
-          />
-          <span className="text-xs text-muted-foreground font-medium">{item.name}</span>
-        </div>
-      ))}
-    </div>
   )
 }
