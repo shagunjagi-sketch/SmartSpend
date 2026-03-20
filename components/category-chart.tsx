@@ -18,7 +18,7 @@ const CHART_COLORS = [
   '#A8D8EA', // Sky Blue
 ]
 
-type FilterPeriod = 'monthly' | 'quarterly'
+type FilterPeriod = 'monthly'
 
 interface ChartDataItem {
   name: string
@@ -30,18 +30,11 @@ interface ChartDataItem {
 
 export function CategoryChart() {
   const { transactions, isLoading } = useExpenses()
-  const [filterPeriod, setFilterPeriod] = useState<FilterPeriod>('monthly')
 
   const chartData = useMemo<ChartDataItem[]>(() => {
     const now = new Date()
-    let startDate: Date
-
-    if (filterPeriod === 'monthly') {
-      startDate = new Date(now.getFullYear(), now.getMonth(), 1)
-    } else {
-      // Quarterly - last 3 months
-      startDate = new Date(now.getFullYear(), now.getMonth() - 2, 1)
-    }
+    // Always show current month only
+    const startDate = new Date(now.getFullYear(), now.getMonth(), 1)
 
     const filteredTransactions = transactions.filter(t => new Date(t.date) >= startDate)
 
@@ -72,8 +65,13 @@ export function CategoryChart() {
       }
     })
 
-    return data.sort((a, b) => b.value - a.value)
-  }, [transactions, filterPeriod])
+    return data.sort((a, b) => {
+      // Pin 'Other' to the bottom
+      if (a.category === 'other') return 1
+      if (b.category === 'other') return -1
+      return b.value - a.value
+    })
+  }, [transactions])
 
   if (isLoading) {
     return (
@@ -105,29 +103,7 @@ export function CategoryChart() {
     <Card className="bg-card border-border/50 rounded-2xl shadow-lg hover:shadow-xl transition-shadow">
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-foreground text-lg font-semibold">Spending by Category</CardTitle>
-          <div className="flex gap-1 p-1 bg-secondary rounded-xl">
-            <button
-              onClick={() => setFilterPeriod('monthly')}
-              className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
-                filterPeriod === 'monthly'
-                  ? 'bg-primary text-primary-foreground shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              Monthly
-            </button>
-            <button
-              onClick={() => setFilterPeriod('quarterly')}
-              className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
-                filterPeriod === 'quarterly'
-                  ? 'bg-primary text-primary-foreground shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              Quarterly
-            </button>
-          </div>
+          <CardTitle className="text-foreground text-lg font-semibold">Spending by Category (Current Month)</CardTitle>
         </div>
       </CardHeader>
       <CardContent>

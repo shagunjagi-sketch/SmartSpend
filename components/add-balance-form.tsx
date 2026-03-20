@@ -33,7 +33,7 @@ export function AddBalanceForm() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="gap-2 border-success/50 text-success hover:bg-success/10 hover:border-success rounded-xl">
+        <Button variant="outline" className="gap-2 border-success/50 text-success rounded-xl">
           <Wallet className="h-4 w-4" />
           Add Balance
         </Button>

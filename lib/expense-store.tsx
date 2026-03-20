@@ -25,15 +25,15 @@ const ExpenseContext = createContext<ExpenseContextType | null>(null)
 
 // Sample data generator for demo
 function generateSampleData(): Transaction[] {
-  const categories: Category[] = ['food', 'transport', 'shopping', 'bills', 'entertainment', 'other']
-  const paymentModes: PaymentMode[] = ['cash', 'online', 'upi', 'card']
+  const categories: Category[] = ['canteen', 'stationery', 'subscriptions', 'transport', 'hangingout', 'other']
+  const paymentModes: PaymentMode[] = ['cash', 'online', 'card']
   const descriptions: Record<Category, string[]> = {
-    food: ['Swiggy Order', 'Zomato', 'Coffee at Starbucks', 'Pizza Hut', 'Chai & Snacks'],
-    transport: ['Uber ride', 'Ola Auto', 'Metro Card', 'Petrol', 'Rapido'],
-    shopping: ['Amazon', 'Flipkart', 'Myntra', 'Reliance Trends', 'D-Mart'],
-    bills: ['Electricity Bill', 'Internet', 'Phone Recharge', 'Netflix', 'Spotify'],
-    entertainment: ['Movie tickets', 'Gaming', 'Concert', 'Bowling', 'Books'],
-    other: ['Gift for friend', 'Miscellaneous', 'Emergency', 'Donation', 'Gym']
+    canteen: ['Lunch at Canteen', 'Coffee & Snacks', 'Chai & Momos', 'Breakfast', 'Dinner'],
+    stationery: ['Notebooks', 'Pens & Pencils', 'Xerox', 'Printing', 'Assignment Materials'],
+    subscriptions: ['Netflix', 'Spotify', 'YouTube Premium', 'Prime', 'Photoshop'],
+    transport: ['Uber ride', 'Auto Rickshaw', 'Bus Pass', 'Metro Card', 'Fuel'],
+    hangingout: ['Movie tickets', 'Pizza night', 'Bowling', 'Cafe hangout', 'Gaming'],
+    other: ['Gift for friend', 'Miscellaneous', 'Emergency', 'Donation', 'Books']
   }
 
   const transactions: Transaction[] = []
@@ -55,12 +55,12 @@ function generateSampleData(): Transaction[] {
       
       // Amount varies by category (in INR)
       let baseAmount = 100
-      if (category === 'bills') baseAmount = 500
-      else if (category === 'shopping') baseAmount = 800
-      else if (category === 'food') baseAmount = 250
-      else if (category === 'transport') baseAmount = 150
-      else if (category === 'entertainment') baseAmount = 400
-      else if (category === 'other') baseAmount = 300
+      if (category === 'subscriptions') baseAmount = 150
+      else if (category === 'stationery') baseAmount = 200
+      else if (category === 'canteen') baseAmount = 150
+      else if (category === 'transport') baseAmount = 100
+      else if (category === 'hangingout') baseAmount = 300
+      else if (category === 'other') baseAmount = 200
 
       const amount = baseAmount + Math.random() * baseAmount * 0.5
 
@@ -120,14 +120,15 @@ export function ExpenseProvider({ children }: { children: ReactNode }) {
   }, [transactions, settings.monthlyBudget, mounted])
 
   const addTransaction = useCallback((transaction: Omit<Transaction, 'id' | 'createdAt' | 'updatedAt'>) => {
-    const now = new Date()
     const newTransaction: Transaction = {
       ...transaction,
       id: generateId(),
-      createdAt: now,
-      updatedAt: now
+      createdAt: new Date(),
+      updatedAt: new Date()
     }
     setTransactions((prev) => [...prev, newTransaction])
+    // Automatically deduct balance when expense is added
+    setBalance((prev) => Math.max(0, prev - transaction.amount))
   }, [])
 
   const updateTransaction = useCallback((id: string, updates: Partial<Transaction>) => {

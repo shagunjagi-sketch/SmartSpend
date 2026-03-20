@@ -16,27 +16,30 @@ export function SplitBillUtility() {
   const { splitBills, addSplitBill, updateSplitBill, deleteSplitBill } = useExpenses()
   const [open, setOpen] = useState(false)
 
+  // Sort with recent bills at top
+  const sortedBills = [...splitBills].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+
   return (
-    <Card className="bg-card border-border/50">
+    <Card className="bg-card border-border/50 rounded-2xl shadow-lg">
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="text-foreground flex items-center gap-2">
+            <CardTitle className="text-foreground flex items-center gap-2 text-lg font-semibold">
               <Users className="h-5 w-5 text-primary" />
               Split Bills
             </CardTitle>
-            <CardDescription className="text-muted-foreground">
+            <CardDescription className="text-muted-foreground text-sm">
               Manage shared expenses with friends
             </CardDescription>
           </div>
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-              <Button size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground">
-                <Plus className="h-4 w-4 mr-1" />
+              <Button size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl gap-2">
+                <Plus className="h-4 w-4" />
                 New Split
               </Button>
             </DialogTrigger>
-            <DialogContent className="bg-card border-border sm:max-w-[500px]">
+            <DialogContent className="bg-card border-border sm:max-w-[500px] rounded-2xl">
               <DialogHeader>
                 <DialogTitle className="text-foreground">Create Split Bill</DialogTitle>
                 <DialogDescription className="text-muted-foreground">
@@ -49,15 +52,15 @@ export function SplitBillUtility() {
         </div>
       </CardHeader>
       <CardContent>
-        {splitBills.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground">
+        {sortedBills.length === 0 ? (
+          <div className="text-center py-16 text-muted-foreground">
             <Users className="h-12 w-12 mx-auto mb-3 opacity-50" />
-            <p>No split bills yet</p>
+            <p className="font-medium">No split bills yet</p>
             <p className="text-sm mt-1">Create one to split expenses with friends</p>
           </div>
         ) : (
-          <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2">
-            {splitBills.map((bill) => (
+          <div className="space-y-2 max-h-[600px] overflow-y-auto pr-2">
+            {sortedBills.map((bill) => (
               <SplitBillItem
                 key={bill.id}
                 bill={bill}

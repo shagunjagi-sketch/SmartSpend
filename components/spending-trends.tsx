@@ -1,7 +1,7 @@
 'use client'
 
-import { useMemo } from 'react'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { useMemo, useState } from 'react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useExpenses } from '@/lib/expense-store'
 import { formatCurrency, quickSortTransactions, binarySearchDateRange } from '@/lib/expense-engine'
@@ -9,138 +9,229 @@ import { CATEGORY_CONFIG } from '@/lib/types'
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react'
 
+type TimePeriod = '15d' | '30d' | '90d' | 'year'
+
 export function SpendingTrends() {
   const { transactions, isLoading } = useExpenses()
+  const [timePeriod, setTimePeriod] = useState<TimePeriod>('30d')
 
   const dailySpendingData = useMemo(() => {
     if (isLoading) return []
     
     const now = new Date()
-    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
+    let startDate: Date
+    let groupBy: 'day' | 'week' | 'month' = 'day'
+
+    if (timePeriod === '15d') {
+      startDate = new Date(now.getTime() - 15 * 24 * 60 * 60 * 1000)
+      groupBy = 'day'
+    } else if (timePeriod === '30d') {
+      startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
+      groupBy = 'day'
+    } else if (timePeriod === '90d') {
+      startDate = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000)
+      groupBy = 'week'
+    } else {
+      // Last year
+      startDate = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate())
+      groupBy = 'month'
+    }
     
     const sortedTransactions = quickSortTransactions(transactions, 'date', true)
-    const recentTransactions = binarySearchDateRange(sortedTransactions, thirtyDaysAgo, now)
+    const recentTransactions = binarySearchDateRange(sortedTransactions, startDate, now)
 
-    // Group by day
-    const dailyTotals = new Map<string, number>()
+    // Group by selected period
+    const periodTotals = new Map<string, number>()
     
     for (const t of recentTransactions) {
-      const dateKey = t.date.toISOString().split('T')[0]
-      dailyTotals.set(dateKey, (dailyTotals.get(dateKey) || 0) + t.amount)
+      let dateKey: string
+      let displayDate: string
+
+      if (groupBy === 'day') {
+        dateKey = t.date.toISOString().split('T')[0]
+        displayDate = new Date(t.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+      } else if (groupBy === 'week') {
+        const weekStart = new Date(t.date)
+        weekStart.setDate(weekStart.getDate() - weekStart.getDay())
+        dateKey = weekStart.toISOString().split('T')[0]
+        displayDate = `Week of ${weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
+      } else {
+        // Month
+        const month = t.date.toISOString().slice(0, 7)
+        dateKey = month
+        displayDate = new Date(t.date).toLocaleDateString('en-US', { month: 'short', year: '2-digit' })
+      }
+
+      periodTotals.set(dateKey, (periodTotals.get(dateKey) || 0) + t.amount)
     }
 
-    // Fill in missing days with 0
+    // Fill in missing periods with 0
     const result: { date: string; amount: number; displayDate: string }[] = []
-    const current = new Date(thirtyDaysAgo)
+    const current = new Date(startDate)
     
     while (current <= now) {
-      const dateKey = current.toISOString().split('T')[0]
-      result.push({
-        date: dateKey,
-        amount: dailyTotals.get(dateKey) || 0,
-        displayDate: current.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-      })
-      current.setDate(current.getDate() + 1)
+      let dateKey: string
+      let displayDate: string
+
+      if (groupBy === 'day') {
+        dateKey = current.toISOString().split('T')[0]
+        displayDate = current.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+        result.push({
+          date: dateKey,
+          amount: periodTotals.get(dateKey) || 0,
+          displayDate
+        })
+        current.setDate(current.getDate() + 1)
+      } else if (groupBy === 'week') {
+        const weekStart = new Date(current)
+        weekStart.setDate(weekStart.getDate() - weekStart.getDay())
+        dateKey = weekStart.toISOString().split('T')[0]
+        displayDate = `Week of ${weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
+        
+        if (!result.some(r => r.date === dateKey)) {
+          result.push({
+            date: dateKey,
+            amount: periodTotals.get(dateKey) || 0,
+            displayDate
+          })
+        }
+        current.setDate(current.getDate() + 7)
+      } else {
+        // Month
+        const month = current.toISOString().slice(0, 7)
+        dateKey = month
+        displayDate = current.toLocaleDateString('en-US', { month: 'short', year: '2-digit' })
+        
+        if (!result.some(r => r.date === dateKey)) {
+          result.push({
+            date: dateKey,
+            amount: periodTotals.get(dateKey) || 0,
+            displayDate
+          })
+        }
+        current.setMonth(current.getMonth() + 1)
+      }
     }
 
     return result
-  }, [transactions, isLoading])
+  }, [transactions, isLoading, timePeriod])
 
   if (isLoading) {
     return (
       <Card className="bg-card border-border/50 rounded-2xl shadow-lg">
         <CardHeader>
-          <Skeleton className="h-6 w-48" />
-          <Skeleton className="h-4 w-64 mt-2" />
+          <Skeleton className="h-6 w-44" />
         </CardHeader>
-        <CardContent>
-          <Skeleton className="h-[250px] w-full" />
+        <CardContent className="flex items-center justify-center h-[300px]">
+          <Skeleton className="h-64 w-full" />
         </CardContent>
       </Card>
     )
   }
 
+  const avgSpending = dailySpendingData.length > 0 
+    ? dailySpendingData.reduce((sum, d) => sum + d.amount, 0) / dailySpendingData.length
+    : 0
+  const maxSpending = dailySpendingData.length > 0 
+    ? Math.max(...dailySpendingData.map(d => d.amount))
+    : 0
+  const totalSpending = dailySpendingData.reduce((sum, d) => sum + d.amount, 0)
+
   return (
     <Card className="bg-card border-border/50 rounded-2xl shadow-lg hover:shadow-xl transition-shadow">
       <CardHeader>
-        <CardTitle className="text-foreground text-lg font-semibold">30-Day Spending Trend</CardTitle>
-        <CardDescription className="text-muted-foreground">
-          Daily spending over the last month
-        </CardDescription>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-foreground text-lg font-semibold">Spending Trends</CardTitle>
+          <div className="flex gap-1.5 p-1 bg-secondary/50 rounded-xl">
+            {(['15d', '30d', '90d', 'year'] as const).map((period) => (
+              <button
+                key={period}
+                onClick={() => setTimePeriod(period)}
+                className={`px-2.5 py-1 text-xs font-medium rounded-lg transition-all ${
+                  timePeriod === period
+                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                {period === '15d' ? '15d' : period === '30d' ? '30d' : period === '90d' ? '90d' : '1y'}
+              </button>
+            ))}
+          </div>
+        </div>
       </CardHeader>
       <CardContent>
-        <div className="h-[250px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={dailySpendingData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-              <defs>
-                <linearGradient id="colorAmount" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="var(--color-primary)" stopOpacity={0.4} />
-                  <stop offset="95%" stopColor="var(--color-primary)" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
-              <XAxis
-                dataKey="displayDate"
-                tick={{ fill: 'var(--color-muted-foreground)', fontSize: 11 }}
-                tickLine={false}
-                axisLine={false}
-                interval="preserveStartEnd"
-              />
-              <YAxis
-                tick={{ fill: 'var(--color-muted-foreground)', fontSize: 11 }}
-                tickLine={false}
-                axisLine={false}
-                tickFormatter={(value) => `₹${value}`}
-              />
-              <Tooltip content={<TrendTooltip />} />
-              <Area
-                type="monotone"
-                dataKey="amount"
-                stroke="var(--color-primary)"
-                strokeWidth={2}
-                fill="url(#colorAmount)"
-              />
-            </AreaChart>
-          </ResponsiveContainer>
+        <div className="space-y-6">
+          <div className="grid grid-cols-3 gap-3">
+            <div className="bg-primary/10 rounded-xl p-3 border border-primary/20">
+              <p className="text-xs text-muted-foreground font-medium mb-1">Total</p>
+              <p className="text-lg font-bold text-primary">{formatCurrency(totalSpending)}</p>
+            </div>
+            <div className="bg-accent/10 rounded-xl p-3 border border-accent/20">
+              <p className="text-xs text-muted-foreground font-medium mb-1">Average</p>
+              <p className="text-lg font-bold text-accent">{formatCurrency(avgSpending)}</p>
+            </div>
+            <div className="bg-success/10 rounded-xl p-3 border border-success/20">
+              <p className="text-xs text-muted-foreground font-medium mb-1">Peak Day</p>
+              <p className="text-lg font-bold text-success">{formatCurrency(maxSpending)}</p>
+            </div>
+          </div>
+
+          <div className="h-[280px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={dailySpendingData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="colorAmount" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+                <XAxis 
+                  dataKey="displayDate" 
+                  stroke="hsl(var(--muted-foreground))"
+                  style={{ fontSize: '12px' }}
+                  tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                />
+                <YAxis 
+                  stroke="hsl(var(--muted-foreground))"
+                  style={{ fontSize: '12px' }}
+                  tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                />
+                <Tooltip content={<CustomTooltip />} />
+                <Area 
+                  type="monotone" 
+                  dataKey="amount" 
+                  stroke="hsl(var(--primary))" 
+                  strokeWidth={3}
+                  fillOpacity={1} 
+                  fill="url(#colorAmount)"
+                  dot={{ fill: 'hsl(var(--primary))', r: 3 }}
+                  activeDot={{ r: 5 }}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
         </div>
       </CardContent>
     </Card>
   )
 }
 
-function TrendTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number }>; label?: string }) {
+function CustomTooltip({ active, payload }: { active?: boolean; payload?: Array<{ payload: { date: string; amount: number; displayDate: string } }> }) {
   if (!active || !payload?.length) return null
+
+  const data = payload[0].payload
 
   return (
     <div className="bg-popover/95 backdrop-blur-sm border border-border rounded-xl p-3 shadow-xl">
-      <p className="text-sm text-muted-foreground">{label}</p>
-      <p className="font-semibold text-foreground mt-1">
-        {formatCurrency(payload[0].value)}
-      </p>
+      <p className="text-sm font-semibold text-foreground">{data.displayDate}</p>
+      <p className="text-sm text-primary font-bold">{formatCurrency(data.amount)}</p>
     </div>
   )
 }
 
 export function MonthlyTrendsList() {
-  const { analytics, isLoading } = useExpenses()
-
-  if (isLoading) {
-    return (
-      <Card className="bg-card border-border/50 rounded-2xl shadow-lg">
-        <CardHeader>
-          <Skeleton className="h-6 w-36" />
-          <Skeleton className="h-4 w-40 mt-2" />
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {[...Array(3)].map((_, i) => (
-              <Skeleton key={i} className="h-14 w-full" />
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    )
-  }
+  const { analytics } = useExpenses()
 
   if (analytics.monthlyTrends.length === 0) {
     return (
@@ -149,68 +240,44 @@ export function MonthlyTrendsList() {
           <CardTitle className="text-foreground text-lg font-semibold">Category Trends</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground text-center py-4">
-            Not enough data to show trends
-          </p>
+          <p className="text-muted-foreground text-center py-8">No trend data available yet</p>
         </CardContent>
       </Card>
     )
   }
 
   return (
-    <Card className="bg-card border-border/50 rounded-2xl shadow-lg hover:shadow-xl transition-shadow">
+    <Card className="bg-card border-border/50 rounded-2xl shadow-lg">
       <CardHeader>
-        <CardTitle className="text-foreground text-lg font-semibold">Category Trends</CardTitle>
-        <CardDescription className="text-muted-foreground">
-          Compared to last month
-        </CardDescription>
+        <CardTitle className="text-foreground text-lg font-semibold">Category Trends (Current vs Previous Month)</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
-          {analytics.monthlyTrends.slice(0, 5).map((trend) => (
-            <div
-              key={trend.category}
-              className="flex items-center justify-between p-3 bg-secondary/50 rounded-xl hover:bg-secondary transition-all"
-            >
+          {analytics.monthlyTrends.map((trend) => (
+            <div key={trend.category} className="flex items-center justify-between p-3 bg-secondary/30 rounded-xl border border-border/50 hover:bg-secondary/50 transition-colors">
               <div className="flex items-center gap-3">
-                <div
-                  className="w-2 h-8 rounded-full"
-                  style={{ backgroundColor: CATEGORY_CONFIG[trend.category]?.color || '#888' }}
+                <div 
+                  className="h-3 w-3 rounded-full"
+                  style={{ backgroundColor: CATEGORY_CONFIG[trend.category].color }}
                 />
                 <div>
-                  <p className="font-medium text-foreground text-sm">
-                    {CATEGORY_CONFIG[trend.category]?.label || trend.category}
-                  </p>
+                  <p className="font-semibold text-foreground text-sm">{CATEGORY_CONFIG[trend.category].label}</p>
                   <p className="text-xs text-muted-foreground">
-                    {formatCurrency(trend.currentMonth)} this month
+                    Current: {formatCurrency(trend.currentMonth)}
                   </p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                {trend.direction === 'up' && (
-                  <>
-                    <TrendingUp className="h-4 w-4 text-destructive" />
-                    <span className="text-sm font-medium text-destructive">
-                      +{trend.percentageChange.toFixed(0)}%
-                    </span>
-                  </>
-                )}
-                {trend.direction === 'down' && (
-                  <>
-                    <TrendingDown className="h-4 w-4 text-success" />
-                    <span className="text-sm font-medium text-success">
-                      {trend.percentageChange.toFixed(0)}%
-                    </span>
-                  </>
-                )}
-                {trend.direction === 'stable' && (
-                  <>
-                    <Minus className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm font-medium text-muted-foreground">
-                      Stable
-                    </span>
-                  </>
-                )}
+                {trend.direction === 'up' && <TrendingUp className="h-4 w-4 text-destructive" />}
+                {trend.direction === 'down' && <TrendingDown className="h-4 w-4 text-success" />}
+                {trend.direction === 'stable' && <Minus className="h-4 w-4 text-muted-foreground" />}
+                <span className={`text-sm font-semibold ${
+                  trend.direction === 'up' ? 'text-destructive' : 
+                  trend.direction === 'down' ? 'text-success' : 
+                  'text-muted-foreground'
+                }`}>
+                  {trend.percentageChange > 0 ? '+' : ''}{trend.percentageChange}%
+                </span>
               </div>
             </div>
           ))}
