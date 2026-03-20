@@ -92,9 +92,6 @@ function generateSampleData(): Transaction[] {
   return transactions
 }
 
-  return transactions
-}
-
 // Default analytics to avoid hydration mismatch
 const defaultAnalytics: AnalyticsData = {
   totalSpent: 0,
