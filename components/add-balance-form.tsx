@@ -33,9 +33,12 @@ export function AddBalanceForm() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="gap-2 border-success/50 text-success hover:bg-success/10 hover:border-success rounded-xl">
+        <Button 
+          variant="outline" 
+          className="gap-2 border-success/50 text-success hover:bg-success/15 hover:border-success/80 hover:text-success hover:shadow-lg hover:shadow-success/20 rounded-xl transition-all duration-300"
+        >
           <Wallet className="h-4 w-4" />
-          Add Balance
+          <span className="hidden sm:inline">Add Balance</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="bg-card border-border sm:max-w-[400px] rounded-2xl">

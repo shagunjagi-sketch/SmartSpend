@@ -4,11 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { useExpenses } from '@/lib/expense-store'
-import { formatCurrency } from '@/lib/expense-engine'
 import { createClient } from '@/lib/supabase/client'
 import { AnalyticsCards } from './analytics-cards'
 import { TransactionForm } from './transaction-form'
@@ -21,7 +17,7 @@ import { MonthlySummary } from './monthly-summary'
 import { ContactFooter } from './contact-footer'
 import { ThemeToggle } from './theme-toggle'
 import Image from 'next/image'
-import { LayoutDashboard, PieChart, Receipt, Users, Settings, LogOut, User, Sparkles } from 'lucide-react'
+import { LayoutDashboard, PieChart, Receipt, Users, LogOut, User, Sparkles } from 'lucide-react'
 import type { User as SupabaseUser } from '@supabase/supabase-js'
 
 interface ExpenseDashboardProps {
@@ -30,9 +26,6 @@ interface ExpenseDashboardProps {
 
 export function ExpenseDashboard({ user }: ExpenseDashboardProps) {
   const router = useRouter()
-  const { settings, updateSettings } = useExpenses()
-  const [settingsOpen, setSettingsOpen] = useState(false)
-  const [budget, setBudget] = useState(settings.monthlyBudget.toString())
   const [loggingOut, setLoggingOut] = useState(false)
 
   const handleLogout = async () => {
@@ -44,11 +37,6 @@ export function ExpenseDashboard({ user }: ExpenseDashboardProps) {
   }
 
   const userName = user.user_metadata?.full_name || user.email?.split('@')[0] || 'User'
-
-  const handleSaveSettings = () => {
-    updateSettings({ monthlyBudget: parseFloat(budget) || settings.monthlyBudget })
-    setSettingsOpen(false)
-  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -76,50 +64,7 @@ export function ExpenseDashboard({ user }: ExpenseDashboardProps) {
               
               <AddBalanceForm />
               <TransactionForm />
-              
               <ThemeToggle />
-              
-              <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
-                <DialogTrigger asChild>
-                  <Button variant="outline" size="icon" className="border-border text-foreground hover:bg-secondary/80 hover:border-primary rounded-xl">
-                    <Settings className="h-4 w-4" />
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="bg-card border-border rounded-2xl">
-                  <DialogHeader>
-                    <DialogTitle className="text-foreground text-xl font-semibold">Budget Settings</DialogTitle>
-                    <DialogDescription className="text-muted-foreground">
-                      Adjust your monthly budget to track your spending effectively.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="space-y-4 mt-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="budget" className="text-foreground font-medium">Monthly Budget</Label>
-                      <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">₹</span>
-                        <Input
-                          id="budget"
-                          type="number"
-                          value={budget}
-                          onChange={(e) => setBudget(e.target.value)}
-                          className="pl-8 bg-secondary border-border text-foreground rounded-xl h-12"
-                        />
-                      </div>
-                      <p className="text-xs text-muted-foreground">
-                        Current: {formatCurrency(settings.monthlyBudget)}
-                      </p>
-                    </div>
-                    <Button
-                      onClick={handleSaveSettings}
-                      className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl h-11"
-                    >
-                      Save Settings
-                    </Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
-
-              {/* Logout Button */}
               <Button
                 variant="outline"
                 size="icon"

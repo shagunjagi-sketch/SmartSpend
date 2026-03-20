@@ -16,7 +16,7 @@ export type Category =
   | 'subscriptions'
   | 'other'
 
-export type PaymentMode = 'cash' | 'online' | 'upi' | 'card' | 'bank_transfer'
+export type PaymentMode = 'cash' | 'online' | 'card'
 
 export interface Transaction {
   id: string
@@ -94,9 +94,7 @@ export const CATEGORY_CONFIG: Record<Category, { label: string; icon: string; co
 export const PAYMENT_MODE_CONFIG: Record<PaymentMode, { label: string; icon: string }> = {
   cash: { label: 'Cash', icon: 'Banknote' },
   online: { label: 'Online', icon: 'Globe' },
-  upi: { label: 'UPI', icon: 'Smartphone' },
-  card: { label: 'Card', icon: 'CreditCard' },
-  bank_transfer: { label: 'Bank Transfer', icon: 'Building2' }
+  card: { label: 'Card', icon: 'CreditCard' }
 }
 
 // USD to INR conversion rate (can be updated dynamically)

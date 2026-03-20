@@ -24,7 +24,6 @@ const categoryIcons: Record<Category, React.ReactNode> = {
 const paymentIcons: Record<PaymentMode, React.ReactNode> = {
   cash: <Banknote className="h-4 w-4" />,
   online: <Globe className="h-4 w-4" />,
-  upi: <Smartphone className="h-4 w-4" />,
   card: <CreditCard className="h-4 w-4" />
 }
 
@@ -39,7 +38,7 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
   const [isUSD, setIsUSD] = useState(false)
   const [description, setDescription] = useState('')
   const [category, setCategory] = useState<Category>('food')
-  const [paymentMode, setPaymentMode] = useState<PaymentMode>('upi')
+  const [paymentMode, setPaymentMode] = useState<PaymentMode>('cash')
   const [triage, setTriage] = useState<TriageType>('need')
   const [date, setDate] = useState(new Date().toISOString().split('T')[0])
 
@@ -67,7 +66,7 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
     setIsUSD(false)
     setDescription('')
     setCategory('food')
-    setPaymentMode('upi')
+    setPaymentMode('cash')
     setTriage('need')
     setDate(new Date().toISOString().split('T')[0])
     setOpen(false)
@@ -150,10 +149,7 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
               <SelectContent className="bg-card border-border rounded-xl">
                 {(Object.keys(CATEGORY_CONFIG) as Category[]).map((cat) => (
                   <SelectItem key={cat} value={cat} className="text-foreground rounded-lg">
-                    <div className="flex items-center gap-2">
-                      {categoryIcons[cat]}
-                      <span>{CATEGORY_CONFIG[cat].label}</span>
-                    </div>
+                    <span>{CATEGORY_CONFIG[cat].label}</span>
                   </SelectItem>
                 ))}
               </SelectContent>
